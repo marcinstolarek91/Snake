@@ -14,11 +14,14 @@ public class Game {
 	private static final long TIME_TO_CHANGE_SPEED = 10000;
 	private static final long START_DELAY = 2000;
 	private Timer timerMove;
+	private Point food = new Point(0, 0);
 	
 	public Game(int dimX, int dimY) {
 		Point.boardDimX = dimX;
 		Point.boardDimY = dimY;
 		gameSpeed = 1500;
+		snake = new Snake();
+		generateFood();
 		timerMove = new Timer();
 		setGameSpeed(START_DELAY);
 	}
@@ -30,16 +33,17 @@ public class Game {
 	 * 
 	 * @return Food on free point on board
 	 */
-	private Point generateFood() {
+	private void generateFood() {
 		int x, y;
 		do {
 			x = (new Random()).nextInt(Point.boardDimX);
 			y = (new Random()).nextInt(Point.boardDimY);
 		}while(snake.getElements().contains(new Point(x, y)));
-		return new Point(x, y);
+		food = new Point(x, y);
 	}
 	private void moveSnake() {
-		snake.move(generateFood());
+		if (snake.move(food))
+			generateFood();
 		if (!snake.isAlive())
 			endGame();
 	}
