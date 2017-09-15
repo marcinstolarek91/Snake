@@ -37,7 +37,10 @@ public class Snake {
 		return alive;
 	}
 	public void setMoveDir(MoveDirection moveDir) {
+		MoveDirection temp = this.moveDir;
 		this.moveDir = moveDir;
+		if (elements.get(getLength() - 2).equals(generateNewHead())) // snake can't move reverse
+			this.moveDir = temp;
 	}
 	/**
 	 * 

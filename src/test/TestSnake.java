@@ -72,6 +72,11 @@ public class TestSnake {
 		snake1.move(new Point(3, 3));
 		assertEquals(snake1.getHead(), new Point(5, 0));
 	}
+	@Test
+	public void testReverse() {
+		snake1.setMoveDir(MoveDirection.DOWN);
+		assertNotEquals(snake1.getMoveDir(), MoveDirection.DOWN);
+	}
 	@After
 	public void tearDown() {
 		Point.boardDimX = dimXOriginal;
