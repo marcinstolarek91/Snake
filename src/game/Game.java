@@ -8,6 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,6 +28,7 @@ public class Game {
 	private GameWindow gameWindow;
 	private Timer timerMove;
 	private Point food;
+	private HistoricalResults historicalResults;
 	private static final long TIME_TO_CHANGE_SPEED = 10000;
 	private static final long START_DELAY = 2000;
 	private static final long INITIAL_GAME_SPEED = 700;
@@ -32,6 +38,7 @@ public class Game {
 		Game.boardDimX = dimX;
 		Game.boardDimY = dimY;
 		gameSpeed = INITIAL_GAME_SPEED;
+		loadResults();
 		snake = new Snake();
 		generateFood();
 		gameWindow = new GameWindow();
@@ -85,6 +92,9 @@ public class Game {
 			}
 			
 			public void exit() {
+				if (snake.getPoints() > 0)
+					historicalResults.addResult(snake.getPoints());
+				saveResults();
 				this.processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 				System.exit(0);
 			}
@@ -97,6 +107,29 @@ public class Game {
 		}
 		
 		EndText endText = new EndText();
+	}
+	private void loadResults() {
+		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("results.bin"))) {
+			historicalResults = null;
+			historicalResults = (HistoricalResults) inputStream.readObject();
+			inputStream.close();
+		}
+		catch (IOException e) {
+			historicalResults = new HistoricalResults();
+			System.out.println("IOException - load historical results");
+		}
+		catch (ClassNotFoundException e) {
+			System.out.println("ClassNotFoundException - load historical results");
+		}
+	}
+	private void saveResults() {
+		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("results.bin"))) {
+			outputStream.writeObject(historicalResults);
+			outputStream.close();
+		}
+		catch (IOException e) {
+			System.out.println("IOException - save historical results");
+		}
 	}
 	
 	private class GameWindow extends JFrame implements KeyListener {
@@ -148,7 +181,7 @@ public class Game {
 			}
 		}
 		private void generateResultsElements() {
-			bestResult = new JLabel("Best result: " + 0);
+			bestResult = new JLabel("Best result: " + historicalResults.getBestResult());
 			actualResult = new JLabel("Actual result: 0");
 			results.add(bestResult);
 			results.add(actualResult);
@@ -195,7 +228,7 @@ public class Game {
 						setElementEmpty(x, y);
 				}
 			}
-			//bestResult.setText("Best result: " + 0);
+			bestResult.setText("Best result: " + historicalResults.getBestResult());
 			actualResult.setText("Actual result: " + snake.getPoints());
 		}
 		@Override
