@@ -10,7 +10,7 @@ public class Snake {
 	
 	public Snake() {
 		for (int i = 1; i <= 5; i++)
-			elements.add(new Point(0,Point.boardDimY - i));
+			elements.add(new Point(0, Game.boardDimY - i));
 		moveDir = MoveDirection.UP;
 		points = 5;
 		alive = true;

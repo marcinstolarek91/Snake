@@ -2,7 +2,7 @@ package game;
 
 public class Point {
 	private int x, y;
-	public static int boardDimX, boardDimY;
+	
 	
 	public Point(int x, int y) {
 		this.x = x;
@@ -15,16 +15,16 @@ public class Point {
 		return y;
 	}
 	public static int leftX(int actualX) {
-		return (actualX == 0) ? boardDimX - 1 : --actualX;
+		return (actualX == 0) ? Game.boardDimX - 1 : --actualX;
 	}
 	public static int rightX(int actualX) {
-		return (actualX == boardDimX - 1) ? 0 : ++actualX;
+		return (actualX == Game.boardDimX - 1) ? 0 : ++actualX;
 	}
 	public static int upY(int actualY) {
-		return (actualY == 0) ? boardDimY - 1 : --actualY;
+		return (actualY == 0) ? Game.boardDimY - 1 : --actualY;
 	}
 	public static int downY(int actualY) {
-		return (actualY == boardDimY - 1) ? 0 : ++actualY;
+		return (actualY == Game.boardDimY - 1) ? 0 : ++actualY;
 	}
 	@Override
 	public int hashCode() {

@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import game.Game;
 import game.MoveDirection;
 import game.Point;
 import game.Snake;
@@ -13,17 +14,14 @@ import static org.junit.Assert.*;
 
 public class TestSnake {
 	private Snake snake1;
-	private int dimXOriginal = Point.boardDimX;
-	private int dimYOriginal = Point.boardDimY;
+	private int dimXOriginal = Game.boardDimX;
+	private int dimYOriginal = Game.boardDimY;
 	private Point head, tail;
 
-	private boolean containsXY(List<Point> elements, int x, int y) {
-		return elements.contains(new Point(x, y));
-	}
 	@Before
 	public void setUp() throws Exception {
-		Point.boardDimX = 6;
-		Point.boardDimY = 6;
+		Game.boardDimX = 6;
+		Game.boardDimY = 6;
 		snake1 = new Snake();
 	}
 	@Test
@@ -79,7 +77,7 @@ public class TestSnake {
 	}
 	@After
 	public void tearDown() {
-		Point.boardDimX = dimXOriginal;
-		Point.boardDimY = dimYOriginal;
+		Game.boardDimX = dimXOriginal;
+		Game.boardDimY = dimYOriginal;
 	}
 }
