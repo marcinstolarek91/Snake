@@ -29,6 +29,7 @@ public class Game {
 	private Timer timerMove;
 	private Point food;
 	private HistoricalResults historicalResults;
+	private boolean paused;
 	private static final long TIME_TO_CHANGE_SPEED = 10000;
 	private static final long START_DELAY = 2000;
 	private static final long INITIAL_GAME_SPEED = 700;
@@ -37,6 +38,7 @@ public class Game {
 	public Game(int dimX, int dimY) {
 		Game.boardDimX = dimX;
 		Game.boardDimY = dimY;
+		paused = false;
 		gameSpeed = INITIAL_GAME_SPEED;
 		loadResults();
 		snake = new Snake();
@@ -68,6 +70,16 @@ public class Game {
 			generateFood();
 		if (!snake.isAlive())
 			endGame();
+	}
+	private void pause() {
+		if (paused) {
+			paused = false;
+			setGameSpeed(gameSpeed);
+		}
+		else {
+			paused = true;
+			timerMove.cancel();
+		}
 	}
 	private void endGame() {
 		timerMove.cancel();
@@ -138,6 +150,7 @@ public class Game {
 		private JPanel [][] boardElements;
 		private JLabel actualResult;
 		private JLabel bestResult;
+		private JLabel pauseText;
 		public Color emptyColor = Color.GRAY;
 		public Color snakeColor = Color.GREEN;
 		public Color snakeHeadColor = Color.BLUE;
@@ -153,7 +166,7 @@ public class Game {
 		}
 		private void generateScreen() {
 			GridLayout boardGrid = new GridLayout(Game.boardDimX, Game.boardDimY);
-			GridLayout resultsGrid = new GridLayout(2,1);
+			GridLayout resultsGrid = new GridLayout(3,1);
 			
 			boardGrid.setHgap(1);
 			boardGrid.setVgap(1);
@@ -162,7 +175,7 @@ public class Game {
 			board.setLayout(boardGrid);
 			add(board);
 			results.setLocation(Game.boardDimX * 20,0);
-			results.setSize(120, 60);
+			results.setSize(120, 90);
 			results.setLayout(resultsGrid);
 			add(results);
 			this.setLayout(null); // null layout for GameWindow
@@ -183,8 +196,12 @@ public class Game {
 		private void generateResultsElements() {
 			bestResult = new JLabel("Best result: " + historicalResults.getBestResult());
 			actualResult = new JLabel("Actual result: 0");
+			pauseText = new JLabel("PAUSE");
+			pauseText.setFont(new Font("Arial", Font.BOLD, 18));
+			pauseText.setForeground(Color.RED);
 			results.add(bestResult);
 			results.add(actualResult);
+			results.add(pauseText);
 		}
 		private void setElementEmpty(int x, int y) {
 			if (!isElementInRange(x, y))
@@ -230,6 +247,10 @@ public class Game {
 			}
 			bestResult.setText("Best result: " + historicalResults.getBestResult());
 			actualResult.setText("Actual result: " + snake.getPoints());
+			if (paused)
+				pauseText.setVisible(true);
+			else
+				pauseText.setVisible(false);
 		}
 		@Override
 		public void keyPressed(KeyEvent arg0) {
@@ -238,6 +259,7 @@ public class Game {
 				case KeyEvent.VK_RIGHT: snake.setMoveDir(MoveDirection.RIGHT); break;
 				case KeyEvent.VK_DOWN: snake.setMoveDir(MoveDirection.DOWN); break;
 				case KeyEvent.VK_LEFT: snake.setMoveDir(MoveDirection.LEFT); break;
+				case KeyEvent.VK_SPACE: pause(); flushScreen(); break;
 			}
 		}
 		@Override
@@ -262,6 +284,8 @@ public class Game {
 			if (timeSpendAtThatSpeed >= TIME_TO_CHANGE_SPEED) {
 				timeSpendAtThatSpeed = 0;
 				gameSpeed = (long) ((float) gameSpeed * 0.9);
+				if (gameSpeed < 10)
+					gameSpeed = 10;
 				setGameSpeed(gameSpeed);
 			}
 		}
