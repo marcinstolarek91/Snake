@@ -15,28 +15,33 @@ import java.util.TimerTask;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class Game {
 	private long gameSpeed;
-	private Snake snake = new Snake();
-	private GameWindow gameWindow = new GameWindow();
+	private Snake snake;
+	private GameWindow gameWindow;
+	private Timer timerMove;
+	private Point food;
 	private static final long TIME_TO_CHANGE_SPEED = 10000;
 	private static final long START_DELAY = 2000;
-	private Timer timerMove;
-	private Point food = new Point(0, 0);
+	private static final long INITIAL_GAME_SPEED = 700;
 	public static int boardDimX, boardDimY;
 	
 	public Game(int dimX, int dimY) {
 		Game.boardDimX = dimX;
 		Game.boardDimY = dimY;
-		gameSpeed = 1500;
+		gameSpeed = INITIAL_GAME_SPEED;
 		snake = new Snake();
 		generateFood();
+		gameWindow = new GameWindow();
 		timerMove = new Timer();
 		setGameSpeed(START_DELAY);
 	}
 	public void setGameSpeed(long delay) {
 		timerMove.cancel();
+		timerMove.purge();
+		timerMove = new Timer();
 		timerMove.schedule(new MoveTask(), delay, gameSpeed);
 	}
 	/**
@@ -66,12 +71,14 @@ public class Game {
 				super("The end of game");
 				setLayout(null);
 				setVisible(true);
-				setSize(150,50);
+				setSize(360, 120);
 				text.setFont(new Font("Arial", Font.BOLD, 12));
 				text.setLocation(0, 0);
-				text.setSize(110, 50);;
-				button.setLocation(110, 0);
-				button.setSize(40, 0);
+				text.setSize(250, 90);
+				text.setHorizontalAlignment(SwingConstants.CENTER);
+				text.setVerticalAlignment(SwingConstants.CENTER);
+				button.setLocation(250, 0);
+				button.setSize(100, 90);
 				add(text);
 				add(button);
 				button.addActionListener(this);
@@ -117,18 +124,19 @@ public class Game {
 			
 			boardGrid.setHgap(1);
 			boardGrid.setVgap(1);
-			board.setLocation(0,0);
+			board.setLocation(0, 0);
 			board.setSize(Game.boardDimX * 20, Game.boardDimY * 20);
 			board.setLayout(boardGrid);
 			add(board);
 			results.setLocation(Game.boardDimX * 20,0);
-			results.setSize(120,60);
+			results.setSize(120, 60);
 			results.setLayout(resultsGrid);
 			add(results);
 			this.setLayout(null); // null layout for GameWindow
-			this.setSize(board.getSize().width + results.getSize().width, board.getSize().height + results.getSize().height);
-			this.setLocation(10,10);
+			this.setSize(board.getSize().width + results.getSize().width + 20, board.getSize().height + 30);
+			this.setLocation(10, 10);
 			setVisible(true);
+			setResizable(false);
 		}
 		private void generateBoardElements() {
 			boardElements = new JPanel[Game.boardDimX][Game.boardDimY];
@@ -187,8 +195,8 @@ public class Game {
 						setElementEmpty(x, y);
 				}
 			}
-			//bestResult = new JLabel("Best result: " + 0);
-			actualResult = new JLabel("Actual result: " + snake.getPoints());
+			//bestResult.setText("Best result: " + 0);
+			actualResult.setText("Actual result: " + snake.getPoints());
 		}
 		@Override
 		public void keyPressed(KeyEvent arg0) {
@@ -221,7 +229,7 @@ public class Game {
 			if (timeSpendAtThatSpeed >= TIME_TO_CHANGE_SPEED) {
 				timeSpendAtThatSpeed = 0;
 				gameSpeed = (long) ((float) gameSpeed * 0.9);
-				setGameSpeed(0L);
+				setGameSpeed(gameSpeed);
 			}
 		}
 	}

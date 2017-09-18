@@ -12,7 +12,7 @@ public class Snake {
 		for (int i = 1; i <= 5; i++)
 			elements.add(new Point(0, Game.boardDimY - i));
 		moveDir = MoveDirection.UP;
-		points = 5;
+		points = 0;
 		alive = true;
 	}
 	public Point getHead() {
@@ -82,6 +82,6 @@ public class Snake {
 		alive = false;
 	}
 	private void addPoints() {
-		++points;
+		points += (elements.size() * 100) / (Game.boardDimX * Game.boardDimY);
 	}
 }
